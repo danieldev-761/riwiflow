@@ -1,239 +1,92 @@
-# Historia de Usuario - Proyecto Kanban de Tareas
+# Riwiflow 
 
-## 📌 Nombre del Proyecto
+Riwiflow is a high-performance, minimalist Kanban-style project management application built with vanilla JavaScript and modern web standards. It features a polished Material Design aesthetic, secure authenticated routing, and a real-time responsive interface.
 
-**RiwiFlow**
+##  Features
 
----
+-   **Polished Kanban Board**: Interactive board with columns (To Do, In Progress, In Review, Done) and dynamic task counters.
+-   **Role-Based Views**: Admin and Coder roles with specific permissions for creating, editing, and deleting tasks.
+-   **Secure Authentication**: Persistent session management using `localStorage` and custom Auth Guards to protect routes.
+-   **Custom UI Dialogs**: Zero reliance on native browser dialogs (`alert`, `confirm`). All feedback is handled through integrated forms and custom modals.
+-   **Live Search**: Instant task filtering by title or description.
+-   **Responsive Design**: Modern, "Atmospheric" UI built with Tailwind CSS, fully responsive for professional workspaces.
+-   **SPA Routing**: Smooth navigation using the History API without page reloads.
 
-# 🎯 Objetivo General
+## 🛠️ Tech Stack
 
-Como usuario del sistema, quiero administrar tareas mediante un tablero Kanban para organizar el flujo de trabajo según su estado y rol dentro de la aplicación.
+-   **Frontend**: Vanilla JavaScript (ES6+), HTML5, Tailwind CSS.
+-   **Icons & Fonts**: Google Material Symbols, Inter Font.
+-   **Backend (Mock)**: JSON Server for a full REST API experience.
+-   **Build Tool**: Vite for fast development and optimized production builds.
 
----
+##  Getting Started
 
-# 👥 Roles del Sistema
+### Prerequisites
 
-| Rol   | Descripción                                                              |
-| ----- | ------------------------------------------------------------------------ |
-| Admin | Puede crear, editar y visualizar todas las tareas                        |
-| Coder | Puede visualizar todas las tareas y editar únicamente las asignadas a él |
+-   [Node.js](https://nodejs.org/) (v22.12.0 or higher recommended)
+-   npm (comes with Node.js)
 
----
+### Installation
 
-# 🧾 Requerimientos Funcionales
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/riwiflow.git
+    cd riwiflow
+    ```
 
-## 🔐 Autenticación
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-### HU-01 — Inicio de sesión
+### Running the Project
 
-**Como** usuario registrado
-**Quiero** iniciar sesión en la aplicación
-**Para** acceder a las funcionalidades según mi rol.
+You need to run both the **Backend API** and the **Frontend Server**.
 
-### Criterios de aceptación
+1.  **Start the Backend (JSON Server)**:
+    In one terminal, run:
+    ```bash
+    npx json-server db.json
+    ```
+    This will start the mock REST API at `http://localhost:3000`.
 
-- El usuario debe ingresar:
-  - email
-  - password
+2.  **Start the Frontend (Vite)**:
+    In a second terminal, run:
+    ```bash
+    npm run dev
+    ```
+    The application will be available at the URL shown in your terminal (usually `http://localhost:5173`).
 
-- El sistema debe validar las credenciales usando `json-server`.
-- Si las credenciales son correctas:
-  - se debe almacenar la sesión
-  - se debe redireccionar al dashboard principal
+## Test Credentials
 
-- Si las credenciales son incorrectas:
-  - se debe mostrar un mensaje de error
+| Email | Password | Role |
+| :--- | :--- | :--- |
+| `admin@riwiflow.dev` | `admin123` | Administrator |
+| `coder@riwiflow.dev` | `coder123` | Developer |
 
----
+## Project Structure
 
-## 🖥️ Aplicación SPA
-
-### HU-02 — Navegación sin recarga
-
-**Como** usuario
-**Quiero** navegar entre las vistas sin recargar la página
-**Para** tener una mejor experiencia de usuario.
-
-### Criterios de aceptación
-
-- El proyecto debe desarrollarse como una SPA (Single Page Application).
-- Debe manejar rutas internas.
-- La navegación no debe recargar completamente el navegador.
-
----
-
-# 📋 Gestión de Tareas
-
-## HU-03 — Crear tareas (Admin)
-
-**Como** administrador
-**Quiero** crear tareas
-**Para** asignarlas a los coders.
-
-### Criterios de aceptación
-
-- Solo usuarios con rol `admin` pueden crear tareas.
-- La tarea debe contener:
-  - título
-  - descripción
-  - estado
-  - usuario asignado
-
-- El estado inicial por defecto debe ser `todo`.
-
----
-
-## HU-04 — Visualizar tareas
-
-**Como** usuario autenticado
-**Quiero** visualizar todas las tareas
-**Para** conocer el estado del proyecto.
-
-### Criterios de aceptación
-
-- Tanto `admin` como `coder` pueden visualizar todas las tareas.
-- Las tareas deben mostrarse organizadas por columnas:
-  - Todo
-  - In Progress
-  - In Review
-  - Done
-
----
-
-## HU-05 — Editar tareas (Admin)
-
-**Como** administrador
-**Quiero** editar cualquier tarea
-**Para** actualizar información o cambiar estados.
-
-### Criterios de aceptación
-
-- El admin puede:
-  - editar título
-  - editar descripción
-  - cambiar estado
-  - cambiar usuario asignado
-
----
-
-## HU-06 — Editar tareas asignadas (Coder)
-
-**Como** coder
-**Quiero** editar únicamente las tareas asignadas a mí
-**Para** actualizar el progreso de mi trabajo.
-
-### Criterios de aceptación
-
-- El coder NO puede crear tareas.
-- El coder solo puede editar tareas donde:
-
-- El coder puede:
-  - cambiar estado
-  - editar descripción
-
-- El coder NO puede:
-  - editar tareas de otros usuarios
-  - eliminar tareas
-  - crear tareas
-
----
-
-# 🔄 Estados del Kanban
-
-## HU-07 — Flujo de estados
-
-**Como** usuario
-**Quiero** clasificar tareas por estado
-**Para** visualizar el progreso del trabajo.
-
-### Estados requeridos
-
-- `todo`
-- `in progress`
-- `in review`
-- `done`
-
-### Criterios de aceptación
-
-- Cada tarea debe pertenecer a un único estado.
-- Las tareas deben visualizarse en la columna correspondiente.
-- El estado debe poder actualizarse mediante edición.
-
----
-
-# 🗄️ Persistencia de Datos
-
-## HU-08 — Uso de JSON Server
-
-**Como** desarrollador
-**Quiero** usar `json-server`
-**Para** simular una API REST.
-
-### Criterios de aceptación
-
-- Debe utilizarse `json-server`.
-- La estructura del archivo `db.json` debe mantenerse exactamente así:
-
-```json
-{
-  "users": [
-    {
-      "id": 1,
-      "name": "",
-      "email": "",
-      "password": "",
-      "role": "admin"
-    },
-    {
-      "id": 2,
-      "name": "",
-      "email": "",
-      "password": "",
-      "role": "coder"
-    }
-  ],
-  "tasks": [
-    {
-      "id": 1,
-      "title": "",
-      "description": "",
-      "status": "pending",
-      "userId": 2
-    },
-    {
-      "id": 2,
-      "title": "",
-      "description": "",
-      "status": "done",
-      "userId": 2
-    }
-  ]
-}
+```text
+riwiflow/
+├── src/
+│   ├── js/
+│   │   ├── api.js      # REST API communication
+│   │   ├── auth.js     # Session & localStorage management
+│   │   ├── router.js   # SPA Routing & Auth Guards
+│   │   └── app.js      # Entry point
+│   ├── views/
+│   │   ├── login.js    # Login view logic & template
+│   │   └── dashboard.js # Kanban board logic & template
+│   └── assets/         # Images and icons
+├── index.html          # Main entry point & Tailwind config
+├── db.json             # Mock database
+└── package.json        # Dependencies and scripts
 ```
 
----
+##  Security & Performance
 
-# 🎨 Requerimientos Técnicos
-
-## Frontend
-
-- SPA
-- Manejo de rutas
-- Manejo de estado
-- Consumo de API REST
-- Protección de rutas por autenticación y rol
+-   **Vulnerability Free**: Redundant and vulnerable packages (like `json-serve`) have been removed to ensure a secure environment.
+-   **Optimized Assets**: Modern CSS techniques and blur effects are used to maintain high performance without heavy assets.
 
 ---
-
-# ✅ Entregables
-
-- Proyecto funcional en ingles
-- Código organizado y en ingles
-- Archivo `db.json`
-- README con instrucciones de ejecución
-- Evidencia del manejo de roles
-- Evidencia del funcionamiento del Kanban
-
-## Autores
-Daniel Echeverría, Jose Arévalo
+Developed with ❤️ for professional teams.
