@@ -1,4 +1,3 @@
-// auth.js — Session management using localStorage
 
 const SESSION_KEY = "riwiflow_session";
 

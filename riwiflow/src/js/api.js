@@ -2,9 +2,6 @@
 
 const BASE_URL = "http://localhost:3000";
 
-// ─────────────────────────────────────────
-// USERS
-// ─────────────────────────────────────────
 
 // Fetch all users and find one matching email + password
 async function loginUser(email, password) {
@@ -25,9 +22,6 @@ async function getAllUsers() {
   return response.json();
 }
 
-// ─────────────────────────────────────────
-// TASKS
-// ─────────────────────────────────────────
 
 // Get all tasks from the API
 async function getAllTasks() {
