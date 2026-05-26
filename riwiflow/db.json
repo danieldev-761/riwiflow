@@ -1,0 +1,77 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Alex Rivera",
+      "email": "admin@riwiflow.dev",
+      "password": "admin123",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "name": "Sam Torres",
+      "email": "coder@riwiflow.dev",
+      "password": "coder123",
+      "role": "coder"
+    },
+    {
+      "id": "3",
+      "name": "Jordan Kim",
+      "email": "jordan@riwiflow.dev",
+      "password": "coder123",
+      "role": "coder"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Setup project repository",
+      "description": "Initialize Git repo, create branch structure and configure CI pipeline.",
+      "status": "done",
+      "userId": "1"
+    },
+    {
+      "id": "2",
+      "title": "Design database schema",
+      "description": "Define entity relationships and create migration scripts.",
+      "status": "in review",
+      "userId": "3"
+    },
+    {
+      "id": "3",
+      "title": "Build REST API endpoints",
+      "description": "Implement CRUD endpoints for users and tasks with proper validation.",
+      "status": "in review",
+      "userId": "2"
+    },
+    {
+      "id": "4",
+      "title": "Create login UI",
+      "description": "Design and implement the authentication screens with form validation.",
+      "status": "in progress",
+      "userId": "2"
+    },
+    {
+      "id": "5",
+      "title": "Implement Kanban board",
+      "description": "Build the drag-and-drop Kanban interface with column filtering.",
+      "status": "todo",
+      "userId": "2"
+    },
+    {
+      "id": "6",
+      "title": "Write unit tests",
+      "description": "Cover all service layer functions with Jest unit tests, minimum 80% coverage.",
+      "status": "in progress",
+      "userId": "2"
+    },
+    {
+      "id": "7",
+      "title": "Performance audit",
+      "description": "Run Lighthouse audit and optimize load time, assets, and rendering.",
+      "status": "todo",
+      "userId": "3"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
