@@ -234,3 +234,6 @@ Como usuario del sistema, quiero administrar tareas mediante un tablero Kanban p
 - README con instrucciones de ejecución
 - Evidencia del manejo de roles
 - Evidencia del funcionamiento del Kanban
+
+## Autores
+Daniel Echeverría, Jose Arévalo
