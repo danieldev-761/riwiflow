@@ -29,6 +29,9 @@ export function router() {
     return;
   }
 
+  // Reset body classes to default before mounting the view
+  document.body.className = "bg-surface-container-lowest text-on-surface min-h-screen flex flex-col";
+
   const page = routes[path] || routes["/"];
   if (page) page.mounted();
 }

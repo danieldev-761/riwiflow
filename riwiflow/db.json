@@ -27,14 +27,14 @@
       "id": "1",
       "title": "Setup project repository",
       "description": "Initialize Git repo, create branch structure and configure CI pipeline.",
-      "status": "done",
+      "status": "in review",
       "userId": "1"
     },
     {
       "id": "2",
       "title": "Design database schema",
       "description": "Define entity relationships and create migration scripts.",
-      "status": "in review",
+      "status": "done",
       "userId": "3"
     },
     {

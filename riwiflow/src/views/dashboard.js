@@ -28,7 +28,7 @@ const db = {
     container.innerHTML = `
       <div class="flex-1 flex items-center justify-center">
         <div class="text-center space-y-md">
-          <span class="material-symbols-outlined text-primary text-5xl animate-spin">progress_activity</span>
+          <span class="material-symbols-outlined text-primary text-5xl animate-spin"></span>
           <p class="font-body-md text-body-md text-on-surface-variant">Loading board…</p>
         </div>
       </div>
@@ -175,9 +175,10 @@ function renderCard(task, colId) {
   const cardBorder  = isActive ? "border-l-4 border-l-primary border border-outline-variant" : "border border-outline-variant";
   const cardOpacity = isDone ? "opacity-80 bg-surface/60" : "bg-surface";
   const titleClass  = isDone ? "line-through" : "";
+  const cursorClass = canEdit ? "cursor-grab active:cursor-grabbing" : "";
 
   return `
-    <div class="task-card ${cardOpacity} ${cardBorder} rounded-xl p-md shadow-sm relative group" data-task-id="${task.id}">
+    <div class="task-card ${cardOpacity} ${cardBorder} rounded-xl p-md shadow-sm relative group ${cursorClass}" draggable="true" data-task-id="${task.id}">
       ${canEdit ? `
         <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex gap-1 bg-surface/80 rounded-lg p-1 transition-opacity">
           <button class="btn-edit material-symbols-outlined text-outline hover:text-primary text-sm p-0.5 rounded transition-colors" data-id="${task.id}">edit</button>
@@ -227,7 +228,89 @@ function attachCardListeners() {
       openDeleteConfirmation(btn.dataset.id);
     });
   });
+
+  // Evitar recarga en links de ejemplo
+  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+
+  // Inicializar drag and drop
+  initDragAndDrop();
 }
+
+// ── Drag & Drop ──────────────────────────────────────────────────────────────
+function initDragAndDrop() {
+  const cards = document.querySelectorAll(".task-card");
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    card.addEventListener("dragstart", function(ev) {
+      const taskId = card.dataset.taskId;
+      const task = allTasks.find(t => String(t.id) === taskId);
+      const isAdmin = currentUser.role === "admin";
+      const isOwner = task && String(task.userId) === String(currentUser.id);
+
+      if (!isAdmin && !isOwner) {
+        ev.preventDefault();
+        return;
+      }
+
+      ev.dataTransfer.setData("text/plain", taskId);
+      card.style.opacity = "0.4";
+    });
+
+    card.addEventListener("dragend", function() {
+      card.style.opacity = "1";
+    });
+  }
+
+  const columns = document.querySelectorAll(".kanban-column");
+  for (let j = 0; j < columns.length; j++) {
+    const column = columns[j];
+    const zone = column.querySelector(".flex-1");
+
+    zone.addEventListener("dragover", function(ev) {
+      ev.preventDefault();
+      zone.style.outline = "2px dashed #5300b7";
+      zone.style.backgroundColor = "rgba(83, 0, 183, 0.05)";
+    });
+
+    zone.addEventListener("dragleave", function() {
+      zone.style.outline = "";
+      zone.style.backgroundColor = "";
+    });
+
+    zone.addEventListener("drop", async function(ev) {
+      ev.preventDefault();
+      zone.style.outline = "";
+      zone.style.backgroundColor = "";
+
+      const taskId = ev.dataTransfer.getData("text/plain");
+      const newStatus = column.dataset.col;
+
+      let task = null;
+      for (let k = 0; k < allTasks.length; k++) {
+        if (String(allTasks[k].id) === taskId) {
+          task = allTasks[k];
+          break;
+        }
+      }
+
+      if (!task || task.status === newStatus) return;
+
+      try {
+        const updated = await updateTask(task.id, { status: newStatus });
+        for (let m = 0; m < allTasks.length; m++) {
+          if (allTasks[m].id === task.id) {
+            allTasks[m] = updated;
+            break;
+          }
+        }
+        buildBoard(appContainer);
+      } catch (err) {
+        console.error("Error al mover la tarea:", err);
+      }
+    });
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function filterCards(query) {
   document.querySelectorAll(".task-card").forEach(card => {
