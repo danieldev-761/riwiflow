@@ -69,7 +69,7 @@
       "id": "7",
       "title": "Performance audit",
       "description": "Run Lighthouse audit and optimize load time, assets, and rendering.",
-      "status": "todo",
+      "status": "in progress",
       "userId": "3"
     }
   ],

@@ -1,10 +1,9 @@
-// views/dashboard.js — Kanban board, matched exactly to the reference design
+// views/dashboard.js — Kanban board
 
 import { getAllTasks, getAllUsers, createTask, updateTask, deleteTask } from "../js/api.js";
 import { getSession, clearSession } from "../js/auth.js";
 import { navigate } from "../js/router.js";
 
-// Kanban columns — order defines left-to-right display
 const COLUMNS = [
   { id: "todo",        label: "To Do",       countClass: "bg-surface-container-high text-on-surface-variant" },
   { id: "in progress", label: "In Progress",  countClass: "bg-primary-container text-on-primary" },
@@ -12,7 +11,6 @@ const COLUMNS = [
   { id: "done",        label: "Done",         countClass: "bg-surface-container-high text-on-surface-variant" },
 ];
 
-// Module-level state
 let currentUser  = null;
 let allUsers     = [];
 let allTasks     = [];
@@ -21,14 +19,12 @@ let appContainer = null;
 const db = {
   mounted: async () => {
     const container = document.getElementById("app");
-    appContainer = container;
-    currentUser  = getSession();
-  
-    // Set body/container classes to match the reference design
-    document.body.className = "bg-background text-on-background overflow-hidden h-screen flex";
-    container.className = "bg-background text-on-background overflow-hidden h-screen flex w-full";
+    appContainer    = container;
+    currentUser     = getSession();
 
-    // Loading skeleton
+    document.body.className  = "bg-background text-on-background overflow-hidden h-screen flex";
+    container.className      = "bg-background text-on-background overflow-hidden h-screen flex w-full";
+
     container.innerHTML = `
       <div class="flex-1 flex items-center justify-center">
         <div class="text-center space-y-md">
@@ -57,94 +53,67 @@ const db = {
     }
 
     buildBoard(container);
-  }
+  },
 };
 
 function buildBoard(container) {
   container.innerHTML = "";
-
   const isAdmin = currentUser.role === "admin";
-  
-  // Sidebar HTML from reference
+
   const sidebarHTML = `
     <aside class="hidden md:flex flex-col pt-md pb-xl gap-xs h-full bg-surface-container-low border-r border-outline-variant w-[280px] shrink-0">
       <div class="px-gutter mb-xl">
-        <h1 class="font-headline-md text-headline-md font-bold text-primary">
-          Riwiflow
-        </h1>
-        <p class="font-body-sm text-body-sm text-on-surface-variant">
-          Product Team
-        </p>
+        <h1 class="font-headline-md text-headline-md font-bold text-primary">Riwiflow</h1>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Product Team</p>
       </div>
       <nav class="flex-1 space-y-1">
         <a class="flex items-center bg-primary-fixed text-on-primary-fixed-variant rounded-lg mx-2 px-4 py-3 font-body-sm text-body-sm transition-all scale-[0.98]" href="#">
-          <span class="material-symbols-outlined mr-3">dashboard</span>
-          <span>Dashboard</span>
+          <span class="material-symbols-outlined mr-3">dashboard</span><span>Dashboard</span>
         </a>
         <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">assignment</span>
-          <span>Projects</span>
+          <span class="material-symbols-outlined mr-3">assignment</span><span>Projects</span>
         </a>
         <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">group</span>
-          <span>Team</span>
+          <span class="material-symbols-outlined mr-3">group</span><span>Team</span>
         </a>
         <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">bar_chart</span>
-          <span>Reports</span>
+          <span class="material-symbols-outlined mr-3">bar_chart</span><span>Reports</span>
         </a>
         <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">settings</span>
-          <span>Settings</span>
+          <span class="material-symbols-outlined mr-3">settings</span><span>Settings</span>
         </a>
       </nav>
       <div class="px-4 mt-auto">
         ${isAdmin ? `
           <button id="new-project-btn" class="w-full bg-primary text-on-primary py-3 rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm hover:opacity-90 transition-opacity">
-            <span class="material-symbols-outlined">add</span>
-            New Project
+            <span class="material-symbols-outlined">add</span> New Project
           </button>
         ` : ""}
       </div>
     </aside>
   `;
 
-  // Top bar and Content Area
   const mainHTML = `
     <main class="flex-1 flex flex-col min-w-0">
       <header class="flex justify-between items-center h-16 px-gutter w-full bg-surface border-b border-outline-variant z-40">
         <div class="flex items-center gap-4 flex-1">
           <div class="relative max-w-md w-full">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-            <input
-              id="search-input"
-              class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-full font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-              placeholder="Search tasks or files..."
-              type="text"
-            />
+            <input id="search-input" class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-full font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Search tasks or files..." type="text" />
           </div>
         </div>
         <div class="flex items-center gap-4 ml-4">
           <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">notifications</button>
           <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">help_outline</button>
-          <img
-            id="logout-btn"
-            alt="User profile"
-            class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2-sF_Qd9jEF33fUrS3vMvdoA8rbw2_a6jzv7r_6oDikCkrertidHwLgqAtWuKvLnRx7Lcsi79ZYj4FBaL_pETFxeyeF27_PhXy-KnuioiYgCwYTKcWDEuZoRksSf8Jb0_ZmsxJkpTFGZ2bW8aTl5fhcA4DOHQQal_vu1KVBcizoM56dHRc7Ce_vkUul2aL96DSeDmqR4YdfGUuoIQkUF_F8AX45U05tmCFg7YyPH6xtgAx7e31u5_5e2rQxm_tgBEgnhV-LsqsEDH"
-            title="Logout"
-          />
+          <img id="logout-btn" alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2-sF_Qd9jEF33fUrS3vMvdoA8rbw2_a6jzv7r_6oDikCkrertidHwLgqAtWuKvLnRx7Lcsi79ZYj4FBaL_pETFxeyeF27_PhXy-KnuioiYgCwYTKcWDEuZoRksSf8Jb0_ZmsxJkpTFGZ2bW8aTl5fhcA4DOHQQal_vu1KVBcizoM56dHRc7Ce_vkUul2aL96DSeDmqR4YdfGUuoIQkUF_F8AX45U05tmCFg7YyPH6xtgAx7e31u5_5e2rQxm_tgBEgnhV-LsqsEDH" title="Logout" />
         </div>
       </header>
-
       <div class="flex-1 overflow-x-auto p-gutter custom-scrollbar" id="board-scroll">
         <div class="flex gap-gutter h-full" id="kanban-board">
           ${COLUMNS.map(col => renderColumn(col)).join("")}
         </div>
       </div>
     </main>
-
-    <!-- Modal Overlay -->
     <div id="modal-overlay" class="hidden fixed inset-0 bg-inverse-surface/40 z-50 flex items-center justify-center p-gutter">
       <div id="modal-box" class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-lg"></div>
     </div>
@@ -152,7 +121,6 @@ function buildBoard(container) {
 
   container.innerHTML = sidebarHTML + mainHTML;
 
-  // ── Event listeners ──
   document.getElementById("logout-btn").addEventListener("click", handleLogout);
 
   if (isAdmin) {
@@ -173,7 +141,6 @@ function buildBoard(container) {
 
 function renderColumn(col) {
   const tasks = allTasks.filter(t => t.status === col.id);
-
   return `
     <div class="kanban-column flex flex-col w-1/4 h-full" data-col="${col.id}">
       <div class="flex items-center justify-between mb-md">
@@ -183,7 +150,6 @@ function renderColumn(col) {
         </div>
         <button class="material-symbols-outlined text-outline">more_horiz</button>
       </div>
-
       <div class="flex-1 space-y-md p-2 bg-surface-container-low/50 rounded-xl overflow-y-auto custom-scrollbar" id="col-${col.id.replace(/ /g, "-")}">
         ${tasks.length > 0
           ? tasks.map(t => renderCard(t, col.id)).join("")
@@ -195,78 +161,52 @@ function renderColumn(col) {
 }
 
 function renderCard(task, colId) {
-  const isAdmin  = currentUser.role === "admin";
-  const isOwner  = task.userId === currentUser.id;
-  const canEdit  = isAdmin || isOwner;
-  const isDone   = colId === "done";
-  const isActive = colId === "in progress";
+  const isAdmin    = currentUser.role === "admin";
+  const canEdit    = isAdmin || task.userId === currentUser.id;
+  const isDone     = colId === "done";
+  const isActive   = colId === "in progress";
   const isInReview = colId === "in review";
 
   const assignedUser = allUsers.find(u => u.id === task.userId);
   const assignedName = assignedUser ? assignedUser.name : "Unassigned";
   const initials     = assignedName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
 
-  // Role/Category Badge
-  const badgeLabel = assignedUser?.role === "admin" ? "Engineering" : "Design";
-  const badgeClass = "bg-primary-fixed text-on-primary-fixed-variant px-2 py-0.5 rounded-full font-label-sm text-label-sm";
-
-  // Card classes based on status
-  const cardBorder = isActive
-    ? "border-l-4 border-l-primary border border-outline-variant"
-    : "border border-outline-variant";
+  const badgeClass  = "bg-primary-fixed text-on-primary-fixed-variant px-2 py-0.5 rounded-full font-label-sm text-label-sm";
+  const cardBorder  = isActive ? "border-l-4 border-l-primary border border-outline-variant" : "border border-outline-variant";
   const cardOpacity = isDone ? "opacity-80 bg-surface/60" : "bg-surface";
   const titleClass  = isDone ? "line-through" : "";
 
   return `
     <div class="task-card ${cardOpacity} ${cardBorder} rounded-xl p-md shadow-sm relative group" data-task-id="${task.id}">
-      
-      <!-- Actions Overlay (Visible on hover for those with permission) -->
       ${canEdit ? `
         <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex gap-1 bg-surface/80 rounded-lg p-1 transition-opacity">
           <button class="btn-edit material-symbols-outlined text-outline hover:text-primary text-sm p-0.5 rounded transition-colors" data-id="${task.id}">edit</button>
           ${isAdmin ? `<button class="btn-delete material-symbols-outlined text-outline hover:text-error text-sm p-0.5 rounded transition-colors" data-id="${task.id}">delete</button>` : ""}
         </div>
       ` : ""}
-
       <div class="flex items-start justify-between mb-xs">
-        <span class="${badgeClass}">${badgeLabel}</span>
-        ${isDone ? `
-          <span class="material-symbols-outlined text-tertiary-container text-sm" style="font-variation-settings: 'FILL' 1">check_circle</span>
-        ` : `
-          <span class="material-symbols-outlined text-outline text-sm">attach_file</span>
-        `}
+        <span class="${badgeClass}">${task.category || "General"}</span>
+        ${isDone
+          ? `<span class="material-symbols-outlined text-tertiary-container text-sm" style="font-variation-settings: 'FILL' 1">check_circle</span>`
+          : `<span class="material-symbols-outlined text-outline text-sm">attach_file</span>`
+        }
       </div>
-
-      <h4 class="font-label-md text-label-md text-on-surface mb-xs ${titleClass}">
-        ${task.title}
-      </h4>
-
-      <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
-        ${task.description}
-      </p>
-
+      <h4 class="font-label-md text-label-md text-on-surface mb-xs ${titleClass}">${task.title}</h4>
+      <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">${task.description}</p>
       <div class="mt-md flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <div class="w-6 h-6 rounded-full border-2 border-surface bg-primary-fixed text-on-primary-fixed-variant flex items-center justify-center text-[10px] font-bold">
-            ${initials}
-          </div>
+          <div class="w-6 h-6 rounded-full border-2 border-surface bg-primary-fixed text-on-primary-fixed-variant flex items-center justify-center text-[10px] font-bold">${initials}</div>
           <span class="font-body-sm text-body-sm text-on-surface-variant">${assignedName}</span>
         </div>
-        
-        ${isInReview ? `
-          ${isAdmin ? `
-            <button class="text-primary font-label-sm text-label-sm hover:underline">Review now</button>
-          ` : `
-            <span class="font-label-sm text-label-sm text-outline">Waiting...</span>
-          `}
-        ` : `
-          <span class="font-label-sm text-label-sm ${isActive ? 'text-primary font-bold' : 'text-outline'} flex items-center gap-1">
-            <span class="material-symbols-outlined text-sm">
-              ${isActive ? 'hourglass_empty' : isDone ? 'task_alt' : 'schedule'}
-            </span>
-            ${isActive ? 'Today' : isDone ? 'Completed' : '2d'}
-          </span>
-        `}
+        ${isInReview
+          ? isAdmin
+            ? `<button class="text-primary font-label-sm text-label-sm hover:underline">Review now</button>`
+            : `<span class="font-label-sm text-label-sm text-outline">Waiting...</span>`
+          : `<span class="font-label-sm text-label-sm ${isActive ? "text-primary font-bold" : "text-outline"} flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">${isActive ? "hourglass_empty" : isDone ? "task_alt" : "schedule"}</span>
+              ${isActive ? "Today" : isDone ? "Completed" : "2d"}
+            </span>`
+        }
       </div>
     </div>
   `;
@@ -276,17 +216,15 @@ function attachCardListeners() {
   document.querySelectorAll(".btn-edit").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const taskId = btn.dataset.id;
-      const task = allTasks.find((t) => String(t.id) === taskId);
+      const task = allTasks.find((t) => String(t.id) === btn.dataset.id);
       if (task) openTaskModal(task);
     });
   });
 
   document.querySelectorAll(".btn-delete").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
+    btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const taskId = btn.dataset.id;
-      openDeleteConfirmation(taskId);
+      openDeleteConfirmation(btn.dataset.id);
     });
   });
 }
@@ -300,21 +238,17 @@ function filterCards(query) {
 }
 
 function openTaskModal(task = null) {
-  const isAdmin = currentUser.role === "admin";
+  const isAdmin   = currentUser.role === "admin";
   const isEditing = Boolean(task);
-  const overlay = document.getElementById("modal-overlay");
-  const box     = document.getElementById("modal-box");
+  const overlay   = document.getElementById("modal-overlay");
+  const box       = document.getElementById("modal-box");
 
   const statusOptions = COLUMNS.map(col => `
-    <option value="${col.id}" ${isEditing && task.status === col.id ? "selected" : ""}>
-      ${col.label}
-    </option>
+    <option value="${col.id}" ${isEditing && task.status === col.id ? "selected" : ""}>${col.label}</option>
   `).join("");
 
   const userOptions = allUsers.map(u => `
-    <option value="${u.id}" ${isEditing && task.userId === u.id ? "selected" : ""}>
-      ${u.name} (${u.role})
-    </option>
+    <option value="${u.id}" ${isEditing && task.userId === u.id ? "selected" : ""}>${u.name} (${u.role})</option>
   `).join("");
 
   box.innerHTML = `
@@ -324,12 +258,10 @@ function openTaskModal(task = null) {
         <button id="modal-close" type="button" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-1 rounded-full">close</button>
       </div>
       <div class="px-xl py-lg space-y-lg">
-        <!-- Inline Error Message -->
         <p id="task-error" class="hidden text-error font-body-sm text-body-sm bg-error-container px-md py-sm rounded-lg"></p>
-
         <div class="space-y-sm">
           <label class="font-label-md text-label-md text-on-surface" for="f-title">Title</label>
-          <input id="f-title" type="text" value="${isEditing ? task.title : ""}" ${!isAdmin ? 'disabled' : ''} required class="w-full px-md py-md bg-white border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface input-focus-ring"/>
+          <input id="f-title" type="text" value="${isEditing ? task.title : ""}" ${!isAdmin ? "disabled" : ""} required class="w-full px-md py-md bg-white border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface input-focus-ring"/>
         </div>
         <div class="space-y-sm">
           <label class="font-label-md text-label-md text-on-surface" for="f-desc">Description</label>
@@ -377,12 +309,9 @@ function openDeleteConfirmation(taskId) {
       </p>
     </div>
     <div class="flex items-center justify-end gap-sm px-xl pb-xl">
-      <button id="confirm-cancel" class="px-lg py-md border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors">
-        Cancel
-      </button>
+      <button id="confirm-cancel" class="px-lg py-md border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors">Cancel</button>
       <button id="confirm-delete" class="px-lg py-md bg-error text-on-error rounded-lg font-label-md text-label-md hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-sm">
-        <span class="material-symbols-outlined text-[18px]">delete</span>
-        Delete
+        <span class="material-symbols-outlined text-[18px]">delete</span> Delete
       </button>
     </div>
   `;
@@ -403,19 +332,16 @@ function closeModal() {
 }
 
 async function handleSaveTask(task, isEditing, isAdmin) {
-  const saveBtn = document.getElementById("modal-save");
-  const errorEl = document.getElementById("task-error");
+  const saveBtn     = document.getElementById("modal-save");
+  const errorEl     = document.getElementById("task-error");
   const description = document.getElementById("f-desc").value.trim();
   const status      = document.getElementById("f-status").value;
   const title       = isAdmin ? document.getElementById("f-title").value.trim() : (task?.title || "");
   const userId      = isAdmin ? document.getElementById("f-user").value : (task?.userId || currentUser.id);
 
-  if (isAdmin && !title) {
-    showModalError("Title is required.");
-    return;
-  }
+  if (isAdmin && !title) { showModalError("Title is required."); return; }
 
-  saveBtn.disabled = true;
+  saveBtn.disabled  = true;
   saveBtn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Saving…`;
   errorEl.classList.add("hidden");
 
@@ -423,8 +349,7 @@ async function handleSaveTask(task, isEditing, isAdmin) {
     if (isEditing) {
       const payload = isAdmin ? { title, description, status, userId } : { description, status };
       const updated = await updateTask(task.id, payload);
-      const idx = allTasks.findIndex(t => t.id === task.id);
-      allTasks[idx] = updated;
+      allTasks[allTasks.findIndex(t => t.id === task.id)] = updated;
     } else {
       const created = await createTask({ title, description, status, userId });
       allTasks.push(created);
@@ -433,17 +358,14 @@ async function handleSaveTask(task, isEditing, isAdmin) {
     buildBoard(appContainer);
   } catch {
     showModalError("Error saving task. Please check your connection.");
-    saveBtn.disabled = false;
+    saveBtn.disabled  = false;
     saveBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">${isEditing ? "save" : "add_task"}</span> ${isEditing ? "Save changes" : "Create task"}`;
   }
 }
 
 function showModalError(msg) {
   const errorEl = document.getElementById("task-error");
-  if (errorEl) {
-    errorEl.textContent = msg;
-    errorEl.classList.remove("hidden");
-  }
+  if (errorEl) { errorEl.textContent = msg; errorEl.classList.remove("hidden"); }
 }
 
 async function handleDeleteTask(taskId) {
@@ -452,13 +374,9 @@ async function handleDeleteTask(taskId) {
     allTasks = allTasks.filter(t => String(t.id) !== taskId);
     buildBoard(appContainer);
   } catch {
-    // If delete fails from the card directly (no modal open), or from confirmation
     const errorEl = document.getElementById("task-error");
-    if (errorEl) {
-      showModalError("Error deleting task.");
-    } else {
-      console.error("Error deleting task");
-    }
+    if (errorEl) showModalError("Error deleting task.");
+    else console.error("Error deleting task");
   }
 }
 
