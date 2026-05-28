@@ -1,4 +1,6 @@
-import { router } from "./router.js";
+import { router } from "./router";
 
-window.addEventListener("DOMContentLoaded", router);
-window.addEventListener("popstate", router);
+window.addEventListener('popstate', router);
+
+router();
+

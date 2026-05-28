@@ -16,22 +16,31 @@ export function navigate(path) {
 }
 
 export function router() {
-  const path = window.location.pathname;
+  let path = window.location.pathname;
   const loggedIn = isLoggedIn();
 
-  if (path === "/dashboard" && !loggedIn) {
-    navigate("/login");
-    return;
+  // Auth Guards - Linear style like the TL
+  if (path === "/" || path === "/login") {
+    if (loggedIn) {
+      path = "/dashboard";
+      window.history.pushState({}, "", path);
+    }
   }
 
-  if ((path === "/login" || path === "/") && loggedIn) {
-    navigate("/dashboard");
-    return;
+  if (path === "/dashboard") {
+    if (!loggedIn) {
+      path = "/login";
+      window.history.pushState({}, "", path);
+    }
   }
-
-  // Reset body classes to default before mounting the view
-  document.body.className = "bg-surface-container-lowest text-on-surface min-h-screen flex flex-col";
 
   const page = routes[path] || routes["/"];
-  if (page) page.mounted();
+
+  // Atomic DOM Update: One operation for the HTML
+  document.getElementById("app").innerHTML = page.render();
+
+  document.body.className = "bg-surface-container-lowest text-on-surface min-h-screen flex flex-col";
+  
+  // Logic mounting
+  page.mounted();
 }

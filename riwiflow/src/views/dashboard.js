@@ -17,124 +17,132 @@ let allTasks     = [];
 let appContainer = null;
 
 const db = {
-  mounted: async () => {
-    const container = document.getElementById("app");
-    appContainer    = container;
-    currentUser     = getSession();
-
-    document.body.className  = "bg-background text-on-background overflow-hidden h-screen flex";
-    container.className      = "bg-background text-on-background overflow-hidden h-screen flex w-full";
-
-    container.innerHTML = `
-      <div class="flex-1 flex items-center justify-center">
-        <div class="text-center space-y-md">
-          <span class="material-symbols-outlined text-primary text-5xl animate-spin"></span>
-          <p class="font-body-md text-body-md text-on-surface-variant">Loading board…</p>
+  render: () => {
+    
+    return `
+      <div id="dashboard-container" class="flex-1 flex overflow-hidden w-full h-full">
+        <aside class="hidden md:flex flex-col pt-md pb-xl gap-xs h-full bg-surface-container-low border-r border-outline-variant w-[280px] shrink-0">
+          <div class="px-gutter mb-xl">
+            <h1 class="font-headline-md text-headline-md font-bold text-primary">Riwiflow</h1>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">Product Team</p>
+          </div>
+          <nav class="flex-1 space-y-1">
+            <a class="flex items-center bg-primary-fixed text-on-primary-fixed-variant rounded-lg mx-2 px-4 py-3 font-body-sm text-body-sm transition-all scale-[0.98]" href="#" onclick="return false;">
+              <span class="material-symbols-outlined mr-3">dashboard</span><span>Dashboard</span>
+            </a>
+            <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#" onclick="return false;">
+              <span class="material-symbols-outlined mr-3">assignment</span><span>Projects</span>
+            </a>
+            <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#" onclick="return false;">
+              <span class="material-symbols-outlined mr-3">group</span><span>Team</span>
+            </a>
+            <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#" onclick="return false;">
+              <span class="material-symbols-outlined mr-3">bar_chart</span><span>Reports</span>
+            </a>
+            <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#" onclick="return false;">
+              <span class="material-symbols-outlined mr-3">settings</span><span>Settings</span>
+            </a>
+          </nav>
+          <div class="px-4 mt-auto" id="sidebar-action">
+            <!-- New project button will be injected here if admin -->
+          </div>
+        </aside>
+        <main class="flex-1 flex flex-col min-w-0">
+          <header class="flex justify-between items-center h-16 px-gutter w-full bg-surface border-b border-outline-variant z-40">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="relative max-w-md w-full">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+                <input id="search-input" class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-full font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Search tasks or files..." type="text" />
+              </div>
+            </div>
+            <div class="flex items-center gap-4 ml-4">
+              <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">notifications</button>
+              <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">help_outline</button>
+              <img id="logout-btn" alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2-sF_Qd9jEF33fUrS3vMvdoA8rbw2_a6jzv7r_6oDikCkrertidHwLgqAtWuKvLnRx7Lcsi79ZYj4FBaL_pETFxeyeF27_PhXy-KnuioiYgCwYTKcWDEuZoRksSf8Jb0_ZmsxJkpTFGZ2bW8aTl5fhcA4DOHQQal_vu1KVBcizoM56dHRc7Ce_vkUul2aL96DSeDmqR4YdfGUuoIQkUF_F8AX45U05tmCFg7YyPH6xtgAx7e31u5_5e2rQxm_tgBEgnhV-LsqsEDH" title="Logout" />
+            </div>
+          </header>
+          <div class="flex-1 overflow-x-auto p-gutter custom-scrollbar" id="board-scroll">
+            <div class="flex gap-gutter h-full" id="kanban-board">
+              <!-- Columns will be injected here -->
+              <div class="flex-1 flex items-center justify-center" id="loading-state">
+                <div class="text-center space-y-md">
+                  <span class="material-symbols-outlined text-primary text-5xl animate-spin"></span>
+                  <p class="font-body-md text-body-md text-on-surface-variant">Loading board…</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <div id="modal-overlay" class="hidden fixed inset-0 bg-inverse-surface/40 z-50 flex items-center justify-center p-gutter">
+          <div id="modal-box" class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-lg"></div>
         </div>
       </div>
     `;
+  },
+  mounted: async () => {
+    appContainer = document.getElementById("app");
+    currentUser = getSession();
 
-    try {
-      [allTasks, allUsers] = await Promise.all([getAllTasks(), getAllUsers()]);
-    } catch {
-      container.innerHTML = `
-        <div class="flex-1 flex items-center justify-center">
-          <div class="text-center space-y-md p-xl bg-error-container rounded-xl max-w-md">
-            <span class="material-symbols-outlined text-error text-4xl">wifi_off</span>
-            <p class="font-headline-md text-headline-md text-error">Cannot connect to server</p>
-            <p class="font-body-md text-body-md text-on-surface-variant">
-              Make sure json-server is running:<br>
-              <code class="bg-surface px-sm py-xs rounded font-mono text-primary">npx json-server db.json</code>
-            </p>
-          </div>
-        </div>
-      `;
+    // Adjust body and container classes immediately
+    document.body.className = "bg-background text-on-background overflow-hidden h-screen flex";
+    const dashContainer = document.getElementById("dashboard-container");
+    if (dashContainer) dashContainer.className = "flex-1 flex overflow-hidden w-full h-full bg-background";
+
+    // Setup basic UI logic (Logout, Search)
+    document.getElementById("logout-btn").addEventListener("click", handleLogout);
+    document.getElementById("search-input").addEventListener("input", (e) => {
+      filterCards(e.target.value.trim().toLowerCase());
+    });
+    document.getElementById("modal-overlay").addEventListener("click", (e) => {
+      if (e.target.id === "modal-overlay") closeModal();
+    });
+
+    // If we already have tasks, render immediately to avoid flicker
+    if (allTasks.length > 0) {
+      buildBoardUI();
       return;
     }
 
-    buildBoard(container);
+    try {
+      [allTasks, allUsers] = await Promise.all([getAllTasks(), getAllUsers()]);
+      buildBoardUI();
+    } catch {
+      const board = document.getElementById("kanban-board");
+      if (board) {
+        board.innerHTML = `
+          <div class="flex-1 flex items-center justify-center">
+            <div class="text-center space-y-md p-xl bg-error-container rounded-xl max-w-md">
+              <span class="material-symbols-outlined text-error text-4xl">wifi_off</span>
+              <p class="font-headline-md text-headline-md text-error">Cannot connect to server</p>
+              <p class="font-body-md text-body-md text-on-surface-variant">Make sure json-server is running</p>
+            </div>
+          </div>
+        `;
+      }
+    }
   },
 };
 
-function buildBoard(container) {
-  container.innerHTML = "";
+function buildBoardUI() {
   const isAdmin = currentUser.role === "admin";
+  const board = document.getElementById("kanban-board");
+  const sidebarAction = document.getElementById("sidebar-action");
 
-  const sidebarHTML = `
-    <aside class="hidden md:flex flex-col pt-md pb-xl gap-xs h-full bg-surface-container-low border-r border-outline-variant w-[280px] shrink-0">
-      <div class="px-gutter mb-xl">
-        <h1 class="font-headline-md text-headline-md font-bold text-primary">Riwiflow</h1>
-        <p class="font-body-sm text-body-sm text-on-surface-variant">Product Team</p>
-      </div>
-      <nav class="flex-1 space-y-1">
-        <a class="flex items-center bg-primary-fixed text-on-primary-fixed-variant rounded-lg mx-2 px-4 py-3 font-body-sm text-body-sm transition-all scale-[0.98]" href="#">
-          <span class="material-symbols-outlined mr-3">dashboard</span><span>Dashboard</span>
-        </a>
-        <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">assignment</span><span>Projects</span>
-        </a>
-        <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">group</span><span>Team</span>
-        </a>
-        <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">bar_chart</span><span>Reports</span>
-        </a>
-        <a class="flex items-center text-secondary hover:text-primary hover:bg-primary-container/10 px-4 py-3 mx-2 font-body-sm text-body-sm rounded-lg transition-all" href="#">
-          <span class="material-symbols-outlined mr-3">settings</span><span>Settings</span>
-        </a>
-      </nav>
-      <div class="px-4 mt-auto">
-        ${isAdmin ? `
-          <button id="new-project-btn" class="w-full bg-primary text-on-primary py-3 rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm hover:opacity-90 transition-opacity">
-            <span class="material-symbols-outlined">add</span> New Project
-          </button>
-        ` : ""}
-      </div>
-    </aside>
-  `;
-
-  const mainHTML = `
-    <main class="flex-1 flex flex-col min-w-0">
-      <header class="flex justify-between items-center h-16 px-gutter w-full bg-surface border-b border-outline-variant z-40">
-        <div class="flex items-center gap-4 flex-1">
-          <div class="relative max-w-md w-full">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-            <input id="search-input" class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-full font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Search tasks or files..." type="text" />
-          </div>
-        </div>
-        <div class="flex items-center gap-4 ml-4">
-          <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">notifications</button>
-          <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">help_outline</button>
-          <img id="logout-btn" alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2-sF_Qd9jEF33fUrS3vMvdoA8rbw2_a6jzv7r_6oDikCkrertidHwLgqAtWuKvLnRx7Lcsi79ZYj4FBaL_pETFxeyeF27_PhXy-KnuioiYgCwYTKcWDEuZoRksSf8Jb0_ZmsxJkpTFGZ2bW8aTl5fhcA4DOHQQal_vu1KVBcizoM56dHRc7Ce_vkUul2aL96DSeDmqR4YdfGUuoIQkUF_F8AX45U05tmCFg7YyPH6xtgAx7e31u5_5e2rQxm_tgBEgnhV-LsqsEDH" title="Logout" />
-        </div>
-      </header>
-      <div class="flex-1 overflow-x-auto p-gutter custom-scrollbar" id="board-scroll">
-        <div class="flex gap-gutter h-full" id="kanban-board">
-          ${COLUMNS.map(col => renderColumn(col)).join("")}
-        </div>
-      </div>
-    </main>
-    <div id="modal-overlay" class="hidden fixed inset-0 bg-inverse-surface/40 z-50 flex items-center justify-center p-gutter">
-      <div id="modal-box" class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-lg"></div>
-    </div>
-  `;
-
-  container.innerHTML = sidebarHTML + mainHTML;
-
-  document.getElementById("logout-btn").addEventListener("click", handleLogout);
-
-  if (isAdmin) {
-    const newProjBtn = document.getElementById("new-project-btn");
-    if (newProjBtn) newProjBtn.addEventListener("click", () => openTaskModal(null));
+  if (board) {
+    board.innerHTML = COLUMNS.map(col => renderColumn(col)).join("");
   }
 
-  document.getElementById("search-input").addEventListener("input", (e) => {
-    filterCards(e.target.value.trim().toLowerCase());
-  });
+  if (sidebarAction && isAdmin) {
+    sidebarAction.innerHTML = `
+      <button id="new-project-btn" class="w-full bg-primary text-on-primary py-3 rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm hover:opacity-90 transition-opacity">
+        <span class="material-symbols-outlined">add</span> New Project
+      </button>
+    `;
+    document.getElementById("new-project-btn").addEventListener("click", () => openTaskModal(null));
+  }
 
-  document.getElementById("modal-overlay").addEventListener("click", (e) => {
-    if (e.target.id === "modal-overlay") closeModal();
-  });
+  // Links silence fix
+  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
 
   attachCardListeners();
 }
@@ -229,14 +237,9 @@ function attachCardListeners() {
     });
   });
 
-  // Evitar recarga en links de ejemplo
-  document.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
-
-  // Inicializar drag and drop
   initDragAndDrop();
 }
 
-// ── Drag & Drop ──────────────────────────────────────────────────────────────
 function initDragAndDrop() {
   const cards = document.querySelectorAll(".task-card");
   for (let i = 0; i < cards.length; i++) {
@@ -285,32 +288,21 @@ function initDragAndDrop() {
       const taskId = ev.dataTransfer.getData("text/plain");
       const newStatus = column.dataset.col;
 
-      let task = null;
-      for (let k = 0; k < allTasks.length; k++) {
-        if (String(allTasks[k].id) === taskId) {
-          task = allTasks[k];
-          break;
-        }
-      }
+      const task = allTasks.find(t => String(t.id) === taskId);
 
       if (!task || task.status === newStatus) return;
 
       try {
         const updated = await updateTask(task.id, { status: newStatus });
-        for (let m = 0; m < allTasks.length; m++) {
-          if (allTasks[m].id === task.id) {
-            allTasks[m] = updated;
-            break;
-          }
-        }
-        buildBoard(appContainer);
+        const idx = allTasks.findIndex(t => t.id === task.id);
+        if (idx !== -1) allTasks[idx] = updated;
+        buildBoardUI();
       } catch (err) {
         console.error("Error al mover la tarea:", err);
       }
     });
   }
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
 function filterCards(query) {
   document.querySelectorAll(".task-card").forEach(card => {
@@ -425,20 +417,21 @@ async function handleSaveTask(task, isEditing, isAdmin) {
   if (isAdmin && !title) { showModalError("Title is required."); return; }
 
   saveBtn.disabled  = true;
-  saveBtn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Saving…`;
+  saveBtn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin"></span> Saving…`;
   errorEl.classList.add("hidden");
 
   try {
     if (isEditing) {
       const payload = isAdmin ? { title, description, status, userId } : { description, status };
       const updated = await updateTask(task.id, payload);
-      allTasks[allTasks.findIndex(t => t.id === task.id)] = updated;
+      const idx = allTasks.findIndex(t => t.id === task.id);
+      if (idx !== -1) allTasks[idx] = updated;
     } else {
       const created = await createTask({ title, description, status, userId });
       allTasks.push(created);
     }
     closeModal();
-    buildBoard(appContainer);
+    buildBoardUI();
   } catch {
     showModalError("Error saving task. Please check your connection.");
     saveBtn.disabled  = false;
@@ -455,7 +448,7 @@ async function handleDeleteTask(taskId) {
   try {
     await deleteTask(taskId);
     allTasks = allTasks.filter(t => String(t.id) !== taskId);
-    buildBoard(appContainer);
+    buildBoardUI();
   } catch {
     const errorEl = document.getElementById("task-error");
     if (errorEl) showModalError("Error deleting task.");

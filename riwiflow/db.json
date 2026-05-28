@@ -27,14 +27,14 @@
       "id": "1",
       "title": "Setup project repository",
       "description": "Initialize Git repo, create branch structure and configure CI pipeline.",
-      "status": "in review",
+      "status": "done",
       "userId": "1"
     },
     {
       "id": "2",
       "title": "Design database schema",
       "description": "Define entity relationships and create migration scripts.",
-      "status": "done",
+      "status": "in review",
       "userId": "3"
     },
     {
@@ -48,7 +48,7 @@
       "id": "4",
       "title": "Create login UI",
       "description": "Design and implement the authentication screens with form validation.",
-      "status": "todo",
+      "status": "in progress",
       "userId": "2"
     },
     {
@@ -62,7 +62,7 @@
       "id": "6",
       "title": "Write unit tests",
       "description": "Cover all service layer functions with Jest unit tests, minimum 80% coverage.",
-      "status": "in progress",
+      "status": "todo",
       "userId": "2"
     },
     {
@@ -71,6 +71,13 @@
       "description": "Run Lighthouse audit and optimize load time, assets, and rendering.",
       "status": "in progress",
       "userId": "3"
+    },
+    {
+      "title": "Performance audit",
+      "description": "Audit application performance",
+      "status": "in progress",
+      "userId": "1",
+      "id": "Vo8v4a5_m0s"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
