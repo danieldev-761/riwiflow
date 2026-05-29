@@ -3,11 +3,13 @@
 import login from "../views/login.js";
 import db from "../views/dashboard.js";
 import { isLoggedIn } from "./auth.js";
+import team from "../views/teams.js"; 
 
 const routes = {
   "/": login,
   "/login": login,
   "/dashboard": db,
+  "/team": team, 
 };
 
 export function navigate(path) {

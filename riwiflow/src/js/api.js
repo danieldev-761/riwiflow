@@ -16,6 +16,8 @@ async function getAllUsers() {
   return response.json();
 }
 
+// TASKS
+
 async function getAllTasks() {
   const response = await fetch(`${BASE_URL}/tasks`);
   if (!response.ok) throw new Error("Failed to fetch tasks.");
@@ -48,4 +50,32 @@ async function deleteTask(taskId) {
   return true;
 }
 
-export { loginUser, getAllUsers, getAllTasks, createTask, updateTask, deleteTask };
+// USERS
+
+async function createUser(userData) {
+  const response = await fetch(`${BASE_URL}/users`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+  if (!response.ok) throw new Error("Failed to create user.");
+  return response.json();
+}
+
+async function updateUser(userId, updatedFields) {
+  const response = await fetch(`${BASE_URL}/users/${userId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatedFields),
+  });
+  if (!response.ok) throw new Error("Failed to update user.");
+  return response.json();
+}
+
+async function deleteUser(userId) {
+  const response = await fetch(`${BASE_URL}/users/${userId}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to delete user.");
+  return true;
+}
+
+export { loginUser, getAllUsers, getAllTasks, createTask, updateTask, deleteTask, createUser, updateUser, deleteUser };

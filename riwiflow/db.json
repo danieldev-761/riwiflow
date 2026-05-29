@@ -20,6 +20,13 @@
       "email": "coder3@riwiflow.dev",
       "password": "coder123",
       "role": "coder"
+    },
+    {
+      "name": "coder4",
+      "email": "coder4@riwiflow.dev",
+      "password": "coder4",
+      "role": "coder",
+      "id": "zlZh3wnUwJg"
     }
   ],
   "tasks": [
@@ -78,6 +85,13 @@
       "status": "in progress",
       "userId": "1",
       "id": "Vo8v4a5_m0s"
+    },
+    {
+      "title": "Test new feature",
+      "description": "Review new feature",
+      "status": "in review",
+      "userId": "zlZh3wnUwJg",
+      "id": "S_yjn7BK1aM"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

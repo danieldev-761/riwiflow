@@ -1,92 +1,98 @@
-# Riwiflow 
+# Riwiflow
 
-Riwiflow is a high-performance, minimalist Kanban-style project management application built with vanilla JavaScript and modern web standards. It features a polished Material Design aesthetic, secure authenticated routing, and a real-time responsive interface.
+Riwiflow is a high-performance, minimalist Kanban-style project management application built with vanilla JavaScript and modern web standards. It delivers a polished Material Design aesthetic, role-based views, custom modal interactions, and a responsive SPA shell.
 
-##  Features
+## Features
 
--   **Polished Kanban Board**: Interactive board with columns (To Do, In Progress, In Review, Done) and dynamic task counters.
--   **Role-Based Views**: Admin and Coder roles with specific permissions for creating, editing, and deleting tasks.
--   **Secure Authentication**: Persistent session management using `localStorage` and custom Auth Guards to protect routes.
--   **Custom UI Dialogs**: Zero reliance on native browser dialogs (`alert`, `confirm`). All feedback is handled through integrated forms and custom modals.
--   **Live Search**: Instant task filtering by title or description.
--   **Responsive Design**: Modern, "Atmospheric" UI built with Tailwind CSS, fully responsive for professional workspaces.
--   **SPA Routing**: Smooth navigation using the History API without page reloads.
+- **Polished Kanban Board**: Interactive board with columns (To Do, In Progress, In Review, Done) and live task counts.
+- **Role-Based Access**: Admin and Coder roles with specific permissions for creating, editing, and deleting tasks.
+- **Secure Authentication**: Session persistence via `localStorage` and client-side route protection.
+- **Custom UI Modals**: No native `alert`/`confirm`; all interaction flows use UI-driven dialogs.
+- **Live Search**: Instant filter behavior for tasks and team members.
+- **Responsive Layout**: Modern UI built with Tailwind CSS classes and reusable components.
+- **SPA Routing**: Smooth view switching via client-side routing without full page reloads.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
--   **Frontend**: Vanilla JavaScript (ES6+), HTML5, Tailwind CSS.
--   **Icons & Fonts**: Google Material Symbols, Inter Font.
--   **Backend (Mock)**: JSON Server for a full REST API experience.
--   **Build Tool**: Vite for fast development and optimized production builds.
+- **Frontend**: Vanilla JavaScript (ES6+), HTML5, CSS.
+- **Build Tool**: Vite.
+- **Mock Backend**: JSON Server.
+- **Fonts & Icons**: Google Inter and Material Symbols.
 
-##  Getting Started
+## Repository Layout
 
-### Prerequisites
-
--   [Node.js](https://nodejs.org/) (v22.12.0 or higher recommended)
--   npm (comes with Node.js)
-
-### Installation
-
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/your-username/riwiflow.git
-    cd riwiflow
-    ```
-
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-
-### Running the Project
-
-You need to run both the **Backend API** and the **Frontend Server**.
-
-1.  **Start the Backend (JSON Server)**:
-    In one terminal, run:
-    ```bash
-    npx json-server db.json
-    ```
-    This will start the mock REST API at `http://localhost:3000`.
-
-2.  **Start the Frontend (Vite)**:
-    In a second terminal, run:
-    ```bash
-    npm run dev
-    ```
-    The application will be available at the URL shown in your terminal (usually `http://localhost:5173`).
-
-## Test Credentials
-
-| Email | Password | Role |
-| :--- | :--- | :--- |
-| `admin@riwiflow.dev` | `admin123` | Administrator |
-| `coder@riwiflow.dev` | `coder123` | Developer |
-
-## Project Structure
+This repository contains the live SPA inside the nested `riwiflow/` folder plus static design references at the root.
 
 ```text
 riwiflow/
-├── src/
-│   ├── js/
-│   │   ├── api.js      # REST API communication
-│   │   ├── auth.js     # Session & localStorage management
-│   │   ├── router.js   # SPA Routing & Auth Guards
-│   │   └── app.js      # Entry point
-│   ├── views/
-│   │   ├── login.js    # Login view logic & template
-│   │   └── dashboard.js # Kanban board logic & template
-│   └── assets/         # Images and icons
-├── index.html          # Main entry point & Tailwind config
-├── db.json             # Mock database
-└── package.json        # Dependencies and scripts
+├── board.html              # Static Kanban page reference
+├── login.html              # Static login page reference
+├── README.md               # Project documentation
+└── riwiflow/
+    ├── db.json             # Mock JSON Server database
+    ├── index.html          # SPA entry point
+    ├── package.json        # Vite and json-server scripts
+    ├── src/
+    │   ├── js/
+    │   │   ├── api.js
+    │   │   ├── auth.js
+    │   │   ├── layout.js
+    │   │   ├── router.js
+    │   │   └── app.js
+    │   └── views/
+    │       ├── dashboard.js
+    │       ├── login.js
+    │       └── teams.js
+    ├── public/
+    └── vite.config.js
 ```
 
-##  Security & Performance
+## Getting Started
 
--   **Vulnerability Free**: Redundant and vulnerable packages (like `json-serve`) have been removed to ensure a secure environment.
--   **Optimized Assets**: Modern CSS techniques and blur effects are used to maintain high performance without heavy assets.
+### Prerequisites
 
----
-Developed with ❤️ for professional teams.
+- [Node.js](https://nodejs.org/) (recommended v22+)
+- npm
+
+### Install Dependencies
+
+```bash
+cd riwiflow/riwiflow
+npm install
+```
+
+### Run the App
+
+Open two terminals from `riwiflow/riwiflow`:
+
+1. Start the mock API:
+
+```bash
+npx json-server db.json
+```
+
+2. Start the frontend server:
+
+```bash
+npm run dev
+```
+
+Open the app at the local address shown by Vite (typically `http://localhost:5173`).
+
+## Test Users
+
+| Email | Password | Role |
+| --- | --- | --- |
+| `admin@riwiflow.dev` | `admin123` | Admin |
+| `coder@riwiflow.dev` | `coder123` | Coder |
+
+## Notes
+
+- The root-level `board.html` and `login.html` are static design references and are not the SPA entry points.
+- The SPA lives in the nested `riwiflow/` folder; all runtime code is under `riwiflow/src/`.
+- Use the shared layout helpers in `src/js/layout.js` for UI shell behavior and search binding.
+
+## Authors
+
+- Daniel Echeverría
+- Jose Arevalo
