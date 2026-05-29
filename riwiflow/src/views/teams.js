@@ -1,8 +1,9 @@
 // views/teams.js — Gestión de Equipo (Estilo Bento: Formulario + Tabla)
 // Simplificado para explicación lineal: El formulario y la lista conviven en la misma pantalla.
 
-import { getAllUsers, createUser, updateUser, deleteUser } from "../js/api.js";
+import { getAllUsers, createUser, updateUser, deleteUser, getAllTasks } from "../js/api.js";
 import { getSession } from "../js/auth.js";
+import { navigate } from "../js/router.js";
 import {
     mountShell,
     renderView,
@@ -11,6 +12,7 @@ import {
     updateSidebarActionBtn,
     updateSearchPlaceholder,
     bindSearchInput,
+    setShellActionHandler,
 } from "../js/layout.js";
 
 const ROOT_ADMIN_ID = "1";
@@ -33,8 +35,7 @@ const teams = {
         bindSearchInput(filterTeamMembers);
 
         // 3. Escuchamos eventos globales (como el botón del sidebar)
-        window.removeEventListener("shell:action", handleNewUserAction);
-        window.addEventListener("shell:action", handleNewUserAction);
+        setShellActionHandler(handleNewUserAction);
     }
 };
 
@@ -262,9 +263,51 @@ function openDeleteModal(id) {
 
     document.getElementById("modal-cancel")?.addEventListener("click", closeModal);
     document.getElementById("confirm-delete").onclick = async () => {
-        await deleteUser(id);
-        closeModal();
-        loadAndRenderTeam();
+        const delBtn = document.getElementById("confirm-delete");
+        if (delBtn) {
+            delBtn.disabled = true;
+            delBtn.innerHTML = "Checking…";
+        }
+
+        try {
+            const tasks = await getAllTasks();
+            const assigned = tasks.filter(t => String(t.userId) === String(id));
+
+            if (assigned.length > 0) {
+                // Inform the user that deletion is blocked due to assigned tasks
+                const box = document.getElementById("modal-box");
+                if (box) {
+                    box.innerHTML = `
+                        <div class="p-lg space-y-md">
+                            <h2 class="font-headline-md text-error">Cannot delete user</h2>
+                            <p class="font-body-md text-on-surface-variant">User <b>${user?.name}</b> has ${assigned.length} assigned task(s). Reassign or remove those tasks before deleting the user.</p>
+                            <div class="flex justify-end gap-sm pt-md">
+                                <button id="modal-view-tasks" class="px-lg py-2 bg-primary text-on-primary rounded-lg font-label-md">View assigned tasks</button>
+                                <button id="modal-ok" class="px-lg py-2 border rounded-lg font-label-md">OK</button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById("modal-ok").addEventListener("click", closeModal);
+                    document.getElementById("modal-view-tasks").addEventListener("click", () => {
+                        sessionStorage.setItem("focusUserId", String(id));
+                        closeModal();
+                        navigate("/dashboard");
+                    });
+                }
+                return;
+            }
+
+            await deleteUser(id);
+            closeModal();
+            loadAndRenderTeam();
+        } catch (err) {
+            console.error("Error deleting user:", err);
+            const errEl = document.getElementById("form-error");
+            if (errEl) {
+                errEl.textContent = "Error al eliminar usuario. Intenta de nuevo.";
+                errEl.classList.remove("hidden");
+            }
+        }
     };
 }
 

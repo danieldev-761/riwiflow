@@ -21,7 +21,7 @@ export function router() {
   let path = window.location.pathname;
   const loggedIn = isLoggedIn();
 
-  // Auth Guards - Linear style like the TL
+  // Auth Guards - Linear style 
   if (path === "/" || path === "/login") {
     if (loggedIn) {
       path = "/dashboard";
@@ -29,7 +29,7 @@ export function router() {
     }
   }
 
-  if (path === "/dashboard") {
+  if (path === "/dashboard" || path === "/team") {
     if (!loggedIn) {
       path = "/login";
       window.history.pushState({}, "", path);
@@ -38,7 +38,7 @@ export function router() {
 
   const page = routes[path] || routes["/"];
 
-  // Atomic DOM Update: One operation for the HTML
+  // One operation for the HTML
   document.getElementById("app").innerHTML = page.render();
 
   document.body.className = "bg-surface-container-lowest text-on-surface min-h-screen flex flex-col";

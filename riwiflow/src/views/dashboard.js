@@ -10,6 +10,7 @@ import {
   updateSidebarActionBtn,
   updateSearchPlaceholder,
   bindSearchInput,
+  setShellActionHandler,
 } from "../js/layout.js";
 
 const COLUMNS = [
@@ -35,8 +36,7 @@ const db = {
     // Actualizar el botón de acción del sidebar y el placeholder del buscador
     if (isAdmin) {
       updateSidebarActionBtn({ icon: "add", label: "New Project" });
-      window.removeEventListener("shell:action", handleShellAction);
-      window.addEventListener("shell:action", handleShellAction);
+      setShellActionHandler(handleShellAction);
     }
     updateSearchPlaceholder("Search tasks or files...");
 
@@ -44,7 +44,7 @@ const db = {
     renderView(`
       <div class="flex-1 flex items-center justify-center h-full">
         <div class="text-center space-y-md">
-          <span class="material-symbols-outlined text-primary text-5xl animate-spin">progress_activity</span>
+          <span class="material-symbols-outlined text-primary text-5xl animate-spin"></span>
           <p class="font-body-md text-body-md text-on-surface-variant">Loading board…</p>
         </div>
       </div>
@@ -69,6 +69,11 @@ const db = {
     }
 
     renderBoard();
+    const focusId = sessionStorage.getItem("focusUserId");
+    if (focusId) {
+      highlightTasksForUser(focusId);
+      sessionStorage.removeItem("focusUserId");
+    }
     bindSearchInput(filterCards);
   },
 };
@@ -129,7 +134,7 @@ function renderCard(task, colId) {
   const cursorClass = canEdit ? "cursor-grab active:cursor-grabbing" : "";
 
   return `
-    <div class="task-card ${cardOpacity} ${cardBorder} rounded-xl p-md shadow-sm relative group ${cursorClass}" draggable="true" data-task-id="${task.id}">
+    <div class="task-card ${cardOpacity} ${cardBorder} rounded-xl p-md shadow-sm relative group ${cursorClass}" draggable="true" data-task-id="${task.id}" data-user-id="${task.userId}">
       ${canEdit ? `
         <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex gap-1 bg-surface/80 rounded-lg p-1 transition-opacity">
           <button class="btn-edit material-symbols-outlined text-outline hover:text-primary text-sm p-0.5 rounded transition-colors" data-id="${task.id}">edit</button>
@@ -253,6 +258,16 @@ function filterCards(query) {
     const title = card.querySelector("h4")?.textContent.toLowerCase() || "";
     const desc  = card.querySelector("p")?.textContent.toLowerCase() || "";
     card.style.display = (title.includes(query) || desc.includes(query)) ? "" : "none";
+  });
+}
+
+function highlightTasksForUser(userId) {
+  document.querySelectorAll(".task-card").forEach(card => {
+    if (String(card.dataset.userId) === String(userId)) {
+      card.style.opacity = "";
+    } else {
+      card.style.opacity = "0.25";
+    }
   });
 }
 

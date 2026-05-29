@@ -4,6 +4,8 @@
 import { getSession, clearSession } from "./auth.js";
 import { navigate } from "./router.js";
 
+let shellActionHandler = null;
+
 /**
  * mountShell: Deja preparado el marco de la aplicación (Sidebar y Header).
  * Solo se construye si no existe en el DOM, luego actualiza el estado activo.
@@ -161,6 +163,16 @@ export function updateSidebarActionBtn({ icon, label }) {
     if (btn) {
         btn.querySelector(".material-symbols-outlined").textContent = icon;
         if (lbl) lbl.textContent = label;
+    }
+}
+
+export function setShellActionHandler(handler) {
+    if (shellActionHandler) {
+        window.removeEventListener("shell:action", shellActionHandler);
+    }
+    shellActionHandler = handler;
+    if (shellActionHandler) {
+        window.addEventListener("shell:action", shellActionHandler);
     }
 }
 
