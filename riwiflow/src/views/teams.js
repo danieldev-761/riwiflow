@@ -1,7 +1,7 @@
 // views/teams.js — Gestión de Equipo (Estilo Bento: Formulario + Tabla)
 // Simplificado para explicación lineal: El formulario y la lista conviven en la misma pantalla.
 
-import { getAllUsers, createUser, updateUser, deleteUser, getAllTasks } from "../js/api.js";
+import { getAllUsers, createUser, updateUser, deleteUser, getTasksByUserId } from "../js/api.js";
 import { getSession } from "../js/auth.js";
 import { navigate } from "../js/router.js";
 import {
@@ -270,8 +270,7 @@ function openDeleteModal(id) {
         }
 
         try {
-            const tasks = await getAllTasks();
-            const assigned = tasks.filter(t => String(t.userId) === String(id));
+            const assigned = await getTasksByUserId(id);
 
             if (assigned.length > 0) {
                 // Inform the user that deletion is blocked due to assigned tasks

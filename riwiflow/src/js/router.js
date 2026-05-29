@@ -38,6 +38,13 @@ export function router() {
 
   const page = routes[path] || routes["/"];
 
+  // Set document title based on current route
+  let title = "Riwiflow";
+  if (path === "/" || path === "/login") title = "Riwiflow | Login";
+  else if (path === "/dashboard") title = "Riwiflow | Dashboard";
+  else if (path === "/team") title = "Riwiflow | Team";
+  document.title = title;
+
   // One operation for the HTML
   document.getElementById("app").innerHTML = page.render();
 

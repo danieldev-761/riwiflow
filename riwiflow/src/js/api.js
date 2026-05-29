@@ -78,4 +78,10 @@ async function deleteUser(userId) {
   return true;
 }
 
-export { loginUser, getAllUsers, getAllTasks, createTask, updateTask, deleteTask, createUser, updateUser, deleteUser };
+async function getTasksByUserId(userId) {
+  const response = await fetch(`${BASE_URL}/tasks?userId=${userId}`);
+  if (!response.ok) throw new Error("Failed to fetch user tasks.");
+  return response.json();
+}
+
+export { loginUser, getAllUsers, getAllTasks, createTask, updateTask, deleteTask, createUser, updateUser, deleteUser, getTasksByUserId };
