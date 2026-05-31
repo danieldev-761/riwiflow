@@ -3,11 +3,10 @@
 const BASE_URL = "http://localhost:3000";
 
 async function loginUser(email, password) {
-  const response = await fetch(`${BASE_URL}/users`);
+  const response = await fetch(`${BASE_URL}/users?email=${email}&password=${password}`);
   if (!response.ok) throw new Error("Could not connect to the server.");
   const users = await response.json();
-  const user = users.find((u) => u.email === email && u.password === password);
-  return user || null;
+  return users.length > 0 ? users[0] : null;
 }
 
 async function getAllUsers() {

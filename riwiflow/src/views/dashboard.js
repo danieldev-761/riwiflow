@@ -125,7 +125,7 @@ function renderCard(task, colId) {
 
   const assignedUser = allUsers.find(u => String(u.id) === String(task.userId));
   const assignedName = assignedUser ? assignedUser.name : "Unassigned";
-  const initials     = assignedName.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+  const initials     = getInitials(assignedName);
 
   const badgeClass  = "bg-primary-fixed text-on-primary-fixed-variant px-2 py-0.5 rounded-full font-label-sm text-label-sm";
   const cardBorder  = isActive ? "border-l-4 border-l-primary border border-outline-variant" : "border border-outline-variant";
@@ -189,9 +189,7 @@ function attachCardListeners() {
 }
 
 function initDragAndDrop() {
-  const cards = document.querySelectorAll(".task-card");
-  for (let i = 0; i < cards.length; i++) {
-    const card = cards[i];
+  document.querySelectorAll(".task-card").forEach(card => {
     card.addEventListener("dragstart", function(ev) {
       const taskId = card.dataset.taskId;
       const task = allTasks.find(t => String(t.id) === taskId);
@@ -210,11 +208,9 @@ function initDragAndDrop() {
     card.addEventListener("dragend", function() {
       card.style.opacity = "1";
     });
-  }
+  });
 
-  const columns = document.querySelectorAll(".kanban-column");
-  for (let j = 0; j < columns.length; j++) {
-    const column = columns[j];
+  document.querySelectorAll(".kanban-column").forEach(column => {
     const zone = column.querySelector(".flex-1");
 
     zone.addEventListener("dragover", function(ev) {
@@ -250,7 +246,7 @@ function initDragAndDrop() {
         console.error("Error al mover la tarea:", err);
       }
     });
-  }
+  });
 }
 
 function filterCards(query) {
@@ -269,6 +265,10 @@ function highlightTasksForUser(userId) {
       card.style.opacity = "0.25";
     }
   });
+}
+
+function getInitials(name) {
+  return name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
 }
 
 function openTaskModal(task = null) {

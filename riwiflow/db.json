@@ -22,7 +22,7 @@
       "role": "coder"
     },
     {
-      "name": "coder4",
+      "name": "coder 4",
       "email": "coder4@riwiflow.dev",
       "password": "coder4",
       "role": "coder",
@@ -62,7 +62,7 @@
       "id": "5",
       "title": "Implement Kanban board",
       "description": "Build the drag-and-drop Kanban interface with column filtering.",
-      "status": "in progress",
+      "status": "todo",
       "userId": "2"
     },
     {
@@ -76,7 +76,7 @@
       "id": "7",
       "title": "Performance audit",
       "description": "Run Lighthouse audit and optimize load time, assets, and rendering.",
-      "status": "todo",
+      "status": "in progress",
       "userId": "3"
     },
     {
