@@ -195,7 +195,11 @@ function loadUserIntoForm(user) {
     document.getElementById("f-id").value = user.id;
     document.getElementById("f-name").value = user.name;
     document.getElementById("f-email").value = user.email;
-    document.getElementById("f-role").value = user.role;
+    const roleInput = document.getElementById("f-role");
+    if (roleInput) {
+        roleInput.value = user.role;
+        roleInput.disabled = user.role === "admin";
+    }
     document.getElementById("f-password").value = "";
 
     document.getElementById("form-title").textContent = "Edit Member";
