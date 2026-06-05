@@ -33,6 +33,12 @@ export function router() {
     if (!loggedIn) {
       path = "/login";
       window.history.pushState({}, "", path);
+    } else if (path === "/team") {
+      const user = getSession();
+      if (user?.role !== "admin") {
+        path = "/dashboard";
+        window.history.pushState({}, "", path);
+      }
     }
   }
 

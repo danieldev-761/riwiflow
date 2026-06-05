@@ -65,9 +65,11 @@ function buildSidebar(isAdmin) {
             <a class="nav-item flex items-center px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all text-secondary hover:bg-primary-container/10 hover:text-primary font-body-sm" href="#" onclick="event.preventDefault();" aria-disabled="true">
                 <span class="material-symbols-outlined mr-3">assignment</span><span>Projects</span>
             </a>
+            ${isAdmin ? `
             <a id="nav-team" class="nav-item flex items-center px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all text-secondary hover:bg-primary-container/10 hover:text-primary font-body-sm">
                 <span class="material-symbols-outlined mr-3">group</span><span>Team</span>
             </a>
+            ` : ""}
             <a class="nav-item flex items-center px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all text-secondary hover:bg-primary-container/10 hover:text-primary font-body-sm" href="#" onclick="event.preventDefault();" aria-disabled="true">
                 <span class="material-symbols-outlined mr-3">bar_chart</span><span>Reports</span>
             </a>

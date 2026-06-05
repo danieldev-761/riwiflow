@@ -10,7 +10,7 @@ async function loginUser(email, password) {
 }
 
 async function getAllUsers() {
-  const response = await fetch(`${BASE_URL}/users`);
+  const response = await fetch(`${BASE_URL}/users?`);
   if (!response.ok) throw new Error("Failed to fetch users.");
   return response.json();
 }
@@ -18,7 +18,7 @@ async function getAllUsers() {
 // TASKS
 
 async function getAllTasks() {
-  const response = await fetch(`${BASE_URL}/tasks`);
+  const response = await fetch(`${BASE_URL}/tasks?_expand=user`);
   if (!response.ok) throw new Error("Failed to fetch tasks.");
   return response.json();
 }

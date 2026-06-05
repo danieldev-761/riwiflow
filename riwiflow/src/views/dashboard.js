@@ -123,8 +123,7 @@ function renderCard(task, colId) {
   const isActive   = colId === "in progress";
   const isInReview = colId === "in review";
 
-  const assignedUser = allUsers.find(u => String(u.id) === String(task.userId));
-  const assignedName = assignedUser ? assignedUser.name : "Unassigned";
+  const assignedName = task.user ? task.user.name : "Unassigned";
   const initials     = getInitials(assignedName);
 
   const badgeClass  = "bg-primary-fixed text-on-primary-fixed-variant px-2 py-0.5 rounded-full font-label-sm text-label-sm";

@@ -228,6 +228,20 @@ async function handleSaveUser() {
         password: document.getElementById("f-password").value
     };
 
+    const errEl = document.getElementById("form-error");
+    errEl.classList.add("hidden");
+
+    // Email duplication check
+    const isDuplicate = allUsers.some(u => 
+        u.email.toLowerCase() === userData.email.toLowerCase() && String(u.id) !== String(id)
+    );
+
+    if (isDuplicate) {
+        errEl.textContent = "This email is already in use by another member.";
+        errEl.classList.remove("hidden");
+        return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">progress_activity</span> Saving...`;
 

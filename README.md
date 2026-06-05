@@ -11,8 +11,10 @@ Riwiflow is a high-performance, minimalist Kanban-style project management appli
 - **Live Search**: Instant filter behavior for tasks and team members.
 - **Responsive Layout**: Modern UI built with Tailwind CSS classes and reusable components.
 - **SPA Routing**: Smooth view switching via client-side routing without full page reloads.
+- **Role-Based Routing Security**: Enhanced Auth Guards to prevent unauthorized access to administrative routes (e.g., `/team`).
 - **Dynamic Page Titles**: Context-aware browser tab titles based on the current application route.
-- **Enhanced Deletion Safety**: Intelligent validation preventing deletion of users with active task assignments.
+- **Optimized Data Fetching**: Efficient API interactions using `_expand` relationships to reduce network round-trips.
+- **Enhanced Data Integrity**: Client-side validation for unique email addresses and intelligent deletion safety for users with active tasks.
 
 ## Tech Stack
 
